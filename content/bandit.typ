@@ -98,7 +98,7 @@ $
 This estimator is also unbiased. Indeed, conditioning on the history and the current gain vector,
 
 $
-  EE_t[overline(vg)^((t))]
+  EE_t [overline(vg)^((t))]
   = vone + sum_(a in A) y^((t))_a
     frac(g^((t))_a - 1, y^((t))_a) ve_a
   = vone + sum_(a in A) (g^((t))_a - 1) ve_a
@@ -144,10 +144,10 @@ $
 In particular, when $2 <= |A| <= T$, this gives an $Omega(sqrt(T |A|))$ lower bound.
 
 #paragraph-marker() *Lower bound construction (sketch).*~~
-To understand the source of this lower bound, consider an adversary that chooses a distinguished action $a^star$ uniformly at random from $A$, before the interaction begins. At every round, the adversary independently draws the gains of all actions, with
+To understand the source of this lower bound, consider an adversary that chooses a distinguished action $a^("*")$ uniformly at random from $A$, before the interaction begins. At every round, the adversary independently draws the gains of all actions, with
 $
   EE[g_a^((t))] = cases(
-    1/2 + epsilon & "if " a = a^star,
+    1/2 + epsilon & "if " a = a^("*"),
     1/2 & "otherwise".
   )
 $
