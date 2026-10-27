@@ -137,44 +137,34 @@ Equivalently, the full-information utility learner receives $-hat(vell)^((t))$.
 == Tsallis entropy
 
 
-It can be shown that no bandit learning algorithm can guarantee pseudoregret better than $Omega(sqrt(T |A|))$ in general. More precisely, Theorem 5.1 of #citet(<auer2002nonstochastic>) establishes that for every $|A| >= 2$ and horizon $T$, there exists a distribution over gain sequences for which any bandit algorithm has expected weak regret at least
-$
-  frac(1, 20) min{sqrt(T |A|), T}.
-$
-In particular, when $2 <= |A| <= T$, this gives an $Omega(sqrt(T |A|))$ lower bound.
+Theorem 5.1 of #citet(<auer2002nonstochastic>) establishes an $Omega(min{sqrt(T abs(A)), T})$ lower bound on expected weak regret. The same construction also gives a lower bound on pseudoregret for $2 <= |A| <= T$, as we sketch below.
 
 #paragraph-marker() *Lower bound construction (sketch).*~~
-To understand the source of this lower bound, consider an adversary that chooses a distinguished action $a^("*")$ uniformly at random from $A$, before the interaction begins. At every round, the adversary independently draws the gains of all actions, with
-$
-  EE[g_a^((t))] = cases(
-    1/2 + epsilon & "if " a = a^("*"),
-    1/2 & "otherwise".
-  )
-$
-Each gain is a Bernoulli random variable, and the learner observes only the gain of the sampled action.
-
-The distinguished action is better than every other action by an expected gain of $epsilon$ per round. However, the learner does not know which action is distinguished. Identifying it requires distinguishing a Bernoulli distribution with mean $1/2 + epsilon$ from one with mean $1/2$, which takes on the order of $1 / epsilon^2$ observations.
-
-
-Because the learner must distribute its observations among $|A|$ possible distinguished actions, consider choosing
+For each fixed $j in A$, consider an environment $P_j$ in which action $j$ has independent Bernoulli gains with mean $1/2 + epsilon$, while all other actions have independent Bernoulli gains with mean $1/2$. Let $N_j$ be the number of times the learner selects action $j$. Since $j$ is the best fixed comparator in environment $P_j$, its pseudoregret is
 
 $
-  epsilon = c sqrt(frac(|A|, T))
+  R_j = epsilon (T - EE_j [N_j]),
 $
 
-for a sufficiently small universal constant $c > 0$. An information-theoretic change-of-measure argument shows that the learner cannot identify the distinguished action with sufficiently high probability to avoid playing nondistinguished actions on a constant fraction of rounds in expectation. Intuitively, distinguishing an arm with mean $1/2 + epsilon$ from one with mean $1/2$ requires on the order of $1 / epsilon^2$ observations, and the learner does not have enough rounds to gather this much information about all $|A|$ arms.
+where $EE_j$ denotes expectation over the gains in $P_j$ and the learner's randomization.
 
+To show that some fixed environment is hard, consider averaging over $j$ uniformly only as a proof technique. A standard change-of-measure argument, comparing each $P_j$ with the environment where all actions have mean $1/2$, gives
 
-Each such round incurs an expected gain shortfall of $epsilon$. Therefore,
 $
-  "PseudoReg"^((T))
-  = Omega(epsilon T)
-  = Omega(sqrt(T |A|)).
+  frac(1, |A|) sum_(j in A) EE_j [N_j]
+  <= frac(T, |A|)
+  + O(epsilon T sqrt(frac(T, |A|))).
 $
 
-Although this construction uses randomly generated gains, it also establishes a worst-case lower bound against oblivious adversaries: averaging over the constructed environments implies that at least one fixed gain sequence produces the stated expected regret over the learner's randomization.
+Choosing $epsilon = c sqrt(frac(abs(A), T))$ for a sufficiently small constant $c > 0$ ensures that this average is at most $3T/4$. Consequently,
 
-The lower bound applies directly to pseudoregret, since the distinguished action is a fixed comparator with expected cumulative gain $T(1/2 + epsilon)$. Consequently, no algorithm can guarantee pseudoregret $o(sqrt(T |A|))$ uniformly over all bandit instances in the range $2 <= |A| <= T$.
+$
+  frac(1, |A|) sum_(j in A) R_j
+  >= frac(epsilon T, 4)
+  = Omega(sqrt(T abs(A))).
+$
+
+Therefore, at least one $j in A$ satisfies $R_j = Omega(sqrt(T abs(A)))$, with the comparator $j$ fixed before taking expectations. Averaging over gain sequences in $P_j$ further implies the existence of a fixed oblivious gain sequence attaining the same lower bound. Thus, the construction establishes the claimed pseudoregret lower bound.
 
 The regret guaranteed by Exp3 is therefore optimal only up to a logarithmic factor. It remained open for a long time whether this logarithmic factor could be removed. A positive answer was given by #citet(<audibert2010regret>), who proposed replacing #lecture-link("learning1", <sec-mwu>)[MWU] with #lecture-link("learning1", <ftrl-omd-general-case>)[FTRL] instantiated with the negative $(1\/2)$-Tsallis entropy regularizer
 
@@ -184,7 +174,7 @@ $
 
 #theorem[
   If FTRL with (1/2)-Tsallis entropy receives the estimated utilities $-hat(vell)^((t))$ defined above, with learning rate $eta = sqrt(1 \/ T)$, the resulting bandit algorithm guarantees pseudoregret
-  $ "PseudoReg"^((T)) = O(sqrt(T|A|)), $
+  $ "PseudoReg"^((T)) = O(sqrt(T abs(A))), $
   which is the optimal bound for bandit learning on finite probability distributions.
 ]
 
